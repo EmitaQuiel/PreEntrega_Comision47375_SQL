@@ -1,3 +1,5 @@
+DROP SCHEMA IF EXISTS proyecto_pokemon;
+CREATE SCHEMA proyecto_pokemon;
 use proyecto_pokemon;
 
 CREATE TABLE IF NOT EXISTS pokemon (
