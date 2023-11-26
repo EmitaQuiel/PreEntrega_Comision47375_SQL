@@ -505,3 +505,237 @@ WHERE
 
 -- Consulta de pokemon_debiles_volador
 SELECT * FROM pokemon_debiles_volador;
+
+-- Funcion para obtener el nombre de un pokemon por su nombre
+DELIMITER //
+CREATE FUNCTION obtener_nombre_pokemon(pokemonID INT) 
+RETURNS CHAR(60)
+DETERMINISTIC
+BEGIN
+    DECLARE nombrePokemon CHAR(60);
+    
+    SELECT nombre INTO nombrePokemon FROM pokemon WHERE id = pokemonID;
+    
+    RETURN nombrePokemon;
+END //
+DELIMITER ;
+
+-- Consultar funcion obtener_nombre_pokemon
+SELECT obtener_nombre_pokemon(1) AS NombrePokemon;
+
+-- Funcion para obtener el efecto de un movimiento por su ID
+DELIMITER //
+
+CREATE FUNCTION obtener_efecto_movimiento(movimientoID INT) 
+RETURNS VARCHAR(200)
+DETERMINISTIC
+BEGIN
+    DECLARE nombreYEFecto VARCHAR(200);
+    
+    SELECT CONCAT(nombre, ' - ', efecto) INTO nombreYEFecto FROM movimiento WHERE id = movimientoID;
+    
+    RETURN nombreYEFecto;
+END //
+
+DELIMITER ;
+
+-- Consultar funcion obtener_efecto_movimiento
+SELECT obtener_efecto_movimiento(5); 
+
+-- Funcion para obtener el tipo del pokemon por su id
+DELIMITER //
+
+CREATE FUNCTION obtener_tipo_pokemon(pokemonID INT) 
+RETURNS CHAR(120)
+DETERMINISTIC
+BEGIN
+    DECLARE tipoPokemonInfo CHAR(120);
+    
+    SELECT CONCAT('Tipo: ', tipo_pokemon.nombre, ', Nombre: ', pokemon.nombre) INTO tipoPokemonInfo 
+    FROM pokemon 
+    JOIN tipo_pokemon ON pokemon.tipo_id = tipo_pokemon.id 
+    WHERE pokemon.id = pokemonID;
+    
+    RETURN tipoPokemonInfo;
+END //
+
+DELIMITER ;
+
+-- Consultar obtener_tipo_pokemon
+SELECT obtener_tipo_pokemon(5);
+
+-- Primer stored procedure
+DELIMITER //
+
+CREATE PROCEDURE OrdenarTablaPokemon(
+    IN campo_ordenamiento VARCHAR(100),
+    IN orden VARCHAR(10)
+)
+BEGIN
+    SET @query = CONCAT('SELECT * FROM pokemon ORDER BY ', campo_ordenamiento, ' ', orden);
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+
+DELIMITER ;
+
+-- Usar primer stored procedure
+CALL OrdenarTablaPokemon('nombre', 'ASC'); -- Ordena por nombre en orden ascendente
+
+-- Segundo stored procedure
+DELIMITER //
+
+CREATE PROCEDURE InsertarEliminarRegistroPokemon(
+    IN opcion VARCHAR(10),
+    IN idPokemon INT,
+    IN nombrePokemon VARCHAR(100),
+    IN generacion INT,
+    IN evoluciones INT,
+    IN puntosBase INT,
+    IN habilidad VARCHAR(50),
+    IN categoria VARCHAR(50),
+    IN altura DECIMAL(5, 2),
+    IN sexo VARCHAR(10),
+    IN peso DECIMAL(5, 2),
+    IN regionID INT,
+    IN tipoID INT
+)
+BEGIN
+    IF opcion = 'insertar' THEN
+        -- Insertar un nuevo Pokémon en la tabla 'pokemon'
+        INSERT INTO pokemon (id, nombre, generacion, evoluciones, puntos_base, habilidad, categoria, altura, sexo, peso, region_id, tipo_id)
+        VALUES (idPokemon, nombrePokemon, generacion, evoluciones, puntosBase, habilidad, categoria, altura, sexo, peso, regionID, tipoID);
+    ELSEIF opcion = 'eliminar' THEN
+        -- Eliminar registros de la tabla 'movimiento_pokemon'
+        DELETE FROM movimiento_pokemon WHERE pokemon_id = idPokemon;
+
+        -- Eliminar registros de la tabla 'habitat_pokemon'
+        DELETE FROM habitat_pokemon WHERE pokemon_id = idPokemon;
+
+        -- Eliminar el Pokémon de la tabla 'pokemon'
+        DELETE FROM pokemon WHERE id = idPokemon;
+    END IF;
+    
+END //
+
+DELIMITER ;
+
+-- Usar stored procedure
+CALL InsertarEliminarRegistroPokemon(
+    'insertar', -- Opción para insertar
+    1001, -- ID del nuevo Pokémon
+    'Charmander', -- Nombre del Pokémon
+    1, -- Generación
+    1, -- Evoluciones
+    100, -- Puntos base
+    'Habilidad especial', -- Habilidad
+    'Categoría', -- Categoría
+    1.5, -- Altura
+    'Macho', -- Sexo
+    25.0, -- Peso
+    1, -- ID de la región
+    3 -- ID del tipo de Pokémon
+);
+
+CALL InsertarEliminarRegistroPokemon(
+    'eliminar', -- Opción para eliminar
+    1001, -- ID del Pokémon a eliminar
+    NULL, -- Los demás parámetros pueden permanecer como NULL porque no se usan en la eliminación
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+);
+
+-- Tabla de log para la tabla 'pokemon'
+CREATE TABLE log_pokemon (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50),
+    fecha DATE,
+    hora TIME,
+    accion_realizada VARCHAR(100),
+    detalle VARCHAR(255)
+);
+
+-- Tabla de log para la tabla 'movimiento_pokemon'
+CREATE TABLE log_movimiento_pokemon (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50),
+    fecha DATE,
+    hora TIME,
+    accion_realizada VARCHAR(100),
+    detalle VARCHAR(255)
+);
+
+-- Trigger para antes de insertar en la tabla 'pokemon'
+DELIMITER //
+CREATE TRIGGER before_insert_pokemon_action
+BEFORE INSERT ON pokemon
+FOR EACH ROW
+BEGIN
+    INSERT INTO log_pokemon (usuario, fecha, hora, accion_realizada, detalle)
+    VALUES (USER(), CURDATE(), CURTIME(), 'INSERT', CONCAT('Nuevo registro insertado con ID: ', NEW.id));
+END;
+ //DELIMITER ;
+
+-- Trigger para antes de actualizar en la tabla 'pokemon'
+DELIMITER //
+CREATE TRIGGER before_update_pokemon_action
+BEFORE UPDATE ON pokemon
+FOR EACH ROW
+BEGIN
+    INSERT INTO log_pokemon (usuario, fecha, hora, accion_realizada, detalle)
+    VALUES (USER(), CURDATE(), CURTIME(), 'UPDATE', CONCAT('Registro con ID: ', OLD.id, ' actualizado'));
+END;
+//DELIMITER ;
+
+-- Trigger para antes de eliminar en la tabla 'pokemon'
+DELIMITER //
+CREATE TRIGGER before_delete_pokemon_action
+BEFORE DELETE ON pokemon
+FOR EACH ROW
+BEGIN
+    INSERT INTO log_pokemon (usuario, fecha, hora, accion_realizada, detalle)
+    VALUES (USER(), CURDATE(), CURTIME(), 'DELETE', CONCAT('Registro con ID: ', OLD.id, ' eliminado'));
+END; 
+//DELIMITER ;
+
+-- Trigger para después de insertar en la tabla 'movimiento_pokemon'
+DELIMITER //
+CREATE TRIGGER after_insert_movimiento_pokemon_action
+AFTER INSERT ON movimiento_pokemon
+FOR EACH ROW
+BEGIN
+    INSERT INTO log_movimiento_pokemon (usuario, fecha, hora, accion_realizada, detalle)
+    VALUES (USER(), CURDATE(), CURTIME(), 'INSERT', CONCAT('Nuevo registro insertado con ID: ', NEW.id));
+END;
+//DELIMITER ;
+
+-- Trigger para después de eliminar en la tabla 'movimiento_pokemon'
+DELIMITER //
+CREATE TRIGGER after_delete_movimiento_pokemon_action
+AFTER DELETE ON movimiento_pokemon
+FOR EACH ROW
+BEGIN
+    INSERT INTO log_movimiento_pokemon (usuario, fecha, hora, accion_realizada, detalle)
+    VALUES (USER(), CURDATE(), CURTIME(), 'DELETE', CONCAT('Registro con ID: ', OLD.id, ' eliminado'));
+END;
+//DELIMITER ;
+
+-- Trigger para después de actualizar en la tabla 'movimiento_pokemon'
+DELIMITER //
+CREATE TRIGGER after_update_movimiento_pokemon_action
+AFTER UPDATE ON movimiento_pokemon
+FOR EACH ROW
+BEGIN
+    INSERT INTO log_movimiento_pokemon (usuario, fecha, hora, accion_realizada, detalle)
+    VALUES (USER(), CURDATE(), CURTIME(), 'UPDATE', CONCAT('Registro con ID: ', OLD.id, ' actualizado'));
+END;
+//DELIMITER ;
