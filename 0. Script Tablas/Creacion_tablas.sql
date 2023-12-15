@@ -11,9 +11,9 @@ CREATE TABLE IF NOT EXISTS regiones (
 CREATE TABLE IF NOT EXISTS tipo_pokemon (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL COMMENT 'Nombre del tipo de Pokémon',
-    debilidades VARCHAR(100) COMMENT '',
-    eficaz_contra VARCHAR(100) COMMENT '',
-    inmune VARCHAR(100) COMMENT ''
+    debilidades VARCHAR(100) COMMENT 'Debilidades del tipo',
+    eficaz_contra VARCHAR(100) COMMENT 'Eficacia contra otros tipos',
+    inmune VARCHAR(100) COMMENT 'Inmune a otros tipos'
 );
 
 CREATE TABLE IF NOT EXISTS habitat (

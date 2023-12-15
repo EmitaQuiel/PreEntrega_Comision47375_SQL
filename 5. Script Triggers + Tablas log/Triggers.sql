@@ -2,22 +2,22 @@ use proyecto_pokemon;
 
 -- Tabla de log para la tabla 'pokemon'
 CREATE TABLE log_pokemon (
-    log_id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(50),
-    fecha DATE,
-    hora TIME,
-    accion_realizada VARCHAR(100),
-    detalle VARCHAR(255)
+log_id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Número de identificación único para cada registro de log',
+    usuario VARCHAR(50) COMMENT 'Nombre del usuario que realizó la acción',
+    fecha DATE COMMENT 'Fecha en la que se realizó la acción',
+    hora TIME COMMENT 'Hora en la que se realizó la acción',
+    accion_realizada VARCHAR(100) COMMENT 'Descripción de la acción realizada sobre la tabla pokemon',
+    detalle VARCHAR(255) COMMENT 'Detalles adicionales sobre la acción realizada en la tabla pokemon'
 );
 
 -- Tabla de log para la tabla 'movimiento_pokemon'
 CREATE TABLE log_movimiento_pokemon (
-    log_id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(50),
-    fecha DATE,
-    hora TIME,
-    accion_realizada VARCHAR(100),
-    detalle VARCHAR(255)
+	log_id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Número de identificación único para cada registro de log asociado a movimiento_pokemon',
+    usuario VARCHAR(50) COMMENT 'Nombre del usuario que realizó la acción',
+    fecha DATE COMMENT 'Fecha en la que se realizó la acción',
+    hora TIME COMMENT 'Hora en la que se realizó la acción',
+    accion_realizada VARCHAR(100) COMMENT 'Descripción de la acción realizada sobre la tabla movimiento_pokemon',
+    detalle VARCHAR(255) COMMENT 'Detalles adicionales sobre la acción realizada en la tabla movimiento_pokemon'
 );
 
 -- Trigger para antes de insertar en la tabla 'pokemon'

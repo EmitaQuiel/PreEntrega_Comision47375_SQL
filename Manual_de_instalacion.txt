@@ -1,0 +1,41 @@
+Manual de instalacion para la correcta instalacion de la base de datos Proyecto Pokemon:
+
+Manual de Instalación y Configuración - Proyecto Final de SQL (Emily Castillo Quiel)
+Pasos para la configuración:
+
+    Descargar el proyecto:
+    Descargue y extraiga el archivo comprimido "Proyecto_Final_SQL_EmilyCastilloQuiel" en una ubicación local.
+
+    Ejecución de los Scripts:
+        Abra la carpeta "0. Script Tablas".
+        Ejecute el script "Creacion_tablas.sql". Esto creará la base de datos junto con sus respectivas tablas.
+
+    Inserción de Datos:
+        Acceda a la carpeta "1. Script insercion de datos".
+        Ejecute el script "Insercion_de_datos.sql". Esto llenará las tablas recién creadas con datos.
+
+    Creación de Vistas:
+        Vaya a la carpeta "2. Script Views".
+        Ejecute el script "Vistas.sql" para crear las vistas de la base de datos.
+
+    Creación de Funciones:
+        Ingrese a la carpeta "3. Script Functions".
+        Ejecute el script "Funciones.sql" para generar las funciones definidas en la base de datos.
+
+    Creación de Procedimientos Almacenados:
+        Acceda a la carpeta "4. Script Stored Procedures".
+        Ejecute el script "Stored_Procedures.sql" para crear los procedimientos almacenados.
+
+    Creación de Triggers y Tablas de Log:
+        Vaya a la carpeta "5. Script Triggers + Tablas log".
+        Ejecute el script "Triggers.sql" para generar las tablas de log y los triggers asociados.
+
+    Sentencias DCL (Data Control Language):
+        Ingrese a la carpeta "6. Script DCL".
+        Ejecute el script "Sublenguaje_DCL.sql" para realizar operaciones de control de datos.
+
+    Sentencias TCL (Transaction Control Language):
+        Acceda a la carpeta "7. Script TCL".
+        Ejecute el script "Sublenguaje_TCL.sql" para gestionar el control de transacciones.
+
+Una vez completados estos pasos, la base de datos estará completamente configurada y lista para su uso.
